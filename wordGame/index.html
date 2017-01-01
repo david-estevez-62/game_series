@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Word game!</title>
+    </head>
+    <style>
+        .shortText{
+            font-size:12px;
+        }
+        #dialogoverlay{
+            display: none;
+            opacity:0.8;
+            position:fixed;
+            top:0px;
+            left:0px;
+            background: #FFF;
+            width:100%;
+            z-index:10;
+        }
+        #dialogbox{
+            display: none;
+            position: fixed;
+            background: #000;
+            border-radius:7px;
+            width:340px;
+            z-index:10;
+        }
+        #dialogbox>div{background: #FFF; margin:8px;}
+        #dialogbox>div>#dialogboxhead{background: #666; font-size: 19px; padding: 10px; color: #CCC;}
+        #dialogbox>div>#dialogboxbody{background: #333; padding: 20px; color: #FFF;}
+        #dialogbox>div>#dialogboxfoot{background: #666; padding: 10px; text-align:right;}
+    </style>
+    <body>
+    
+    <center>
+
+
+    <div>
+        <div></div>
+        <form id="initialize-form" name="formex">
+        <h2>Player1:</h2>
+            <label>
+                Enter a word (of your choosing):
+                <input type="text" id="originalWord" name="originalword">
+            </label>
+
+
+            <br>
+            <br>
+            <div>
+                    <span class="shortText">Random Selection:</span> <input id="automaticShuffle" type="button" value="generate">
+            </div>
+            <div>
+                    <span class="shortText">---------or---------</span>
+            </div>
+            
+            <div>
+                    <span class="shortText">manual:</span>
+            </div>
+                    <span id="scrambled"></span>
+            <br>
+
+
+            <label>
+                Enter the scrambled version of that first word:
+                <input type="text" id="scrambledWord" name="scrambledword">
+            </label>
+            
+            
+            <button id="set" type="submit" value="set">Submit</button>
+        </form>
+    </div>
+
+    <hr>
+
+
+    <div>
+        <div></div>
+        <form id="guess-form">
+        <h2>Player2:</h2>
+            <label>
+                Unscramble these letters to form a word:
+                <div><h1 id="setWord"></h1></div>
+                <input type="text" id="guess">
+            </label>
+            <button type="submit">Check</button>
+        </form>
+    </div>
+
+
+
+    <div id="dialogoverlay"></div>
+    <div id="dialogbox">
+        <div>
+            <div id="dialogboxhead"></div>
+            <div id="dialogboxbody"></div>
+            <div id="dialogboxfoot"></div>
+        </div>
+    </div>
+
+
+
+    </center>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script>
+    var alert1Seen = false;
+    var alert2Seen = false;
+    var word,
+    wordArr,
+    scrambledWordArr,
+        scrambledword,
+        generatedword;
+        
+
+    
+
+
+    function CustomAlert(){
+        this.render = function(dialog){
+            var winW = window.innerWidth;
+            var winH = window.innerHeight;
+            var dialogoverlay = document.getElementById("dialogoverlay");
+            var dialogbox = document.getElementById("dialogbox");
+            dialogoverlay.style.display = "block";
+            dialogoverlay.style.height = winH+"px";
+            dialogbox.style.left = (winW/2) - (340 * 0.5) + "px";
+            dialogbox.style.top = "100px";
+            dialogbox.style.display = "block";
+            document.getElementById("dialogboxhead").innerHTML = "Acknowledge This Message";
+            document.getElementById("dialogboxbody").innerHTML = dialog;
+            document.getElementById("dialogboxfoot").innerHTML = "<button onclick='Alert.ok()'>OK</button>";
+        }
+        this.ok = function(){
+            document.getElementById("dialogbox").style.display = "none";
+            document.getElementById("dialogoverlay").style.display = "none";
+        }
+    }
+    var Alert = new CustomAlert();
+
+
+    function shuffle(array) {
+          var currentIndex = array.length, temporaryValue, randomIndex;
+
+          // While there remain elements to shuffle...
+          while (0 !== currentIndex) {
+
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            // And swap it with the current element.
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+          }
+
+          return array;
+    }
+
+
+    $("#originalWord").on("focus", function(){
+        if(!alert1Seen){
+            // First Player: If you didnt read the label please enter a word of your choice that you are later going to scramble. Disclaimer: Make sure you spell this correctly or you'll mess this game session up. And will need to reload the page
+            Alert.render("First Player: If you didnt read the label please enter a word of your choice that you are later going to scramble. Disclaimer: Make sure you spell this correctly or you'll mess this game session up. And will need to reload the page");
+            alert1Seen=true;
+            document.getElementById('originalWord').focus();
+        }
+    });
+
+    $("#scrambledWord").on("focus", function(){
+        if(!alert2Seen){
+            // First Player: If you didnt read the label please enter a word of your choice that you are later going to scramble. Disclaimer: Make sure you spell this correctly or you'll mess this game session up. And will need to reload the page
+            Alert.render("First Player: If you didnt read the label please enter a scrambled word. Disclaimer: Make sure you enter the correct letters and the correct number of times they occur in the actual word, Or else you will mess this game session up. And will need to reload the page");
+            alert2Seen=true;
+            document.getElementById('scrambledWord').focus();
+        }
+    });
+
+    // $("#set").on("click", function(){
+    //     var mixedWord = $("#scrambledWord");
+    //     var originalWord = $("#originalWord");
+
+    //     $("#setWord").text(scrambledword);
+    //     console.log(scrambledword);
+    //     originalWord.val("");
+    //     mixedWord.val("");
+    // })
+
+
+    $("#automaticShuffle").on("click", function(){
+            if($("#originalWord").val().length > 2){
+                word = $("#originalWord").val().toLowerCase();
+
+                // Shuffle the last thing stored. If scramble was not good enough. Or 
+                generatedword = shuffle(word.split('')).join('');
+
+                $("#setWord").text(generatedword);
+                $("#originalWord").val("");
+                $("#scrambledWord").val("");
+
+            }else if(word){
+                word = word;
+
+                generatedword = shuffle(word.split('')).join('');
+
+                $("#setWord").text(generatedword);
+                $("#originalWord").val("");
+                $("#scrambledWord").val("");
+            }else{
+                alert("Make your word longerr!!!")
+            }
+
+        })
+
+    // $(document).keydown(function(e){
+
+    //     if(e.keyCode === 13){
+            
+    //             word = $("#originalWord").val().toLowerCase();
+
+    //             // Shuffle the last thing stored. If scramble was not good enough. Or 
+    //             generatedword = shuffle(word.split('')).join('');
+    //             console.log(generatedword)
+    //             $("#scrambledWord").val(generatedword)
+    //     }
+    // });
+
+    $("#initialize-form").on("submit", function(event){
+        event.preventDefault();
+
+        var entered   = $("#originalWord");
+        var scrambled = $("#scrambledWord");
+
+        if(entered.val().length === 0 ||scrambled.val().length === 0){
+            alert("One or more of your inputs appear to be empty. Try Again");
+            return
+        }
+
+        if(entered.val().length > 2){
+
+        
+            word = entered.val().toLowerCase();
+
+            if(scrambled.val()){
+                var wordScrambled = scrambled.val().toLowerCase();
+
+                wordArr = word.split('');
+                scrambledWordArr = wordScrambled.split('');
+
+                if(wordArr.length === scrambledWordArr.length){
+
+                    if(wordScrambled !== word){
+
+                        for(var i = wordArr.length-1; i>=0; i--){
+                            for(j = scrambledWordArr.length-1; j>=0; j--){
+                                if(wordArr[i]===scrambledWordArr[j]){
+                                    wordArr.splice(i,1);
+                                    scrambledWordArr.splice(j,1);
+
+                                    if(wordArr.length === 0 && scrambledWordArr.length===0){
+                                        scrambledword = wordScrambled;
+                                        $("#setWord").text(scrambledword);
+                                        entered.val("");
+                                        scrambled.val("");
+                                        break;
+                                    }
+
+                                    break;
+                                }else{
+                                    continue;
+                                }
+                            }
+                            continue;
+                        }
+
+                        if(wordArr[0] || scrambledWordArr[0]){
+                            alert("It does not look like you scrambled word could ever equal the original word");
+                        }
+
+
+                    }else{
+                        alert("The word that is supposed to be scrambled does not look to be scrambled. Try to enter a scrambled word")
+                    }
+                }else{
+                    alert("The length of your manually scrambled word was not the same as the original word itself")
+                }
+  
+            }else{
+                scrambledword = generatedword;
+                $("#setWord").text(scrambledword);
+                entered.val("");
+                scrambled.val("");
+            }          
+        }else{
+            alert("Make your word longerr!!!")
+        }
+
+    });
+
+
+    $("#guess-form").on("submit", function(event){
+        event.preventDefault();
+
+        var guess = $("#guess").val();
+
+        if(guess === word){
+            Alert.render("You Player 2 have won the Game! You guessed the word correctly.")
+            if(confirm("By clicking 'Yes' it will start a new game, clearing out the fields, and removing the set word")){
+                $("#setWord").text('');
+                $("#guess").val('');
+                word = '';
+            }
+        }else{
+                alert("That is incorrect. Guess Again")
+        }
+    });
+
+
+    </script>
+    </body>
+</html>
