@@ -1,40 +1,44 @@
 
 
-var blockElem = document.createElement('div');
-var btn = document.createElement('button');
-var img = document.createElement('img');
-var span = document.createElement('span');
-var br = document.createElement('br');
+var blockNode = document.createElement('div'),
+    blockChild1 = document.createElement('div'),
+    blockChild2 = document.createElement('div'),
+    btn = document.createElement('button'),
+    img = document.createElement('img'),
+    textBlock = document.createElement('p');
 
 
-blockElem.className = "container";
+blockNode.id = "holder";
 btn.innerHTML = 'flip coin';
 btn.id = 'flipCoin';
-span.id = 'side';
+textBlock.id = 'side';
 
 
-var heads = 2;
-var tails = 1;
-var Status = 'heads';
+var HEADS = 1,
+    TAILS = 0,
+    Status = 'heads';
 
-document.getElementsByTagName('body')[0].appendChild(blockElem).appendChild(img);
-document.getElementsByTagName('body')[0].appendChild(blockElem).appendChild(br);
-document.getElementsByTagName('body')[0].appendChild(blockElem).appendChild(btn);
-document.getElementsByTagName('body')[0].appendChild(blockElem).appendChild(br);
-document.getElementsByTagName('body')[0].appendChild(blockElem).appendChild(span);
+
+document.body.insertBefore(blockNode, document.body.firstChild);
+document.body.firstChild.appendChild(blockChild1);
+document.body.firstChild.appendChild(blockChild2);
+blockChild1.appendChild(img);
+blockChild2.appendChild(textBlock);
+blockChild2.appendChild(btn);
+
 
 
 
 
 btn.addEventListener('click', function(){
   var sideText = document.getElementById('side');
-	var randomNum = Math.ceil(Math.random()*2);
-  if(randomNum === heads){
-    sideText.innerHTML = 'heads';
+	var randomNum = Math.floor(Math.random()*2);
+  if(randomNum === HEADS){
+    textBlock.innerHTML = 'heads';
     img.src = 'assets/heads.png';
     // alert('heads');
   }else{
-    sideText.innerHTML = 'tails';
+    textBlock.innerHTML = 'tails';
     img.src = 'assets/tails.png';
     // alert('tails');
   }

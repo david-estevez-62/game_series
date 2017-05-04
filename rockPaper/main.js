@@ -2,15 +2,13 @@ myfn();
 
 function myfn(){
     var userChoice = prompt("Do you choose rock, paper or scissors?");
-    var userChoice = userChoice.toLowerCase();
+        userChoice = userChoice.toLowerCase();
 
     if (userChoice === "rock" || userChoice === "paper" || userChoice === "scissors"){
-      console.log('continue')
+      var computerChoice = Math.random();
     } else{
       myfn();
     }
-
-    var computerChoice = Math.random();
     
     if (computerChoice < 0.34) {
       computerChoice = "rock";
